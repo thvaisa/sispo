@@ -27,6 +27,9 @@ import simulation.starcat as starcat
 import simulation.compositor as compositor
 import utils
 
+
+from synthspace.renderer import RenderController
+
 class Environment():
     """Simulation environment."""
 
@@ -39,7 +42,7 @@ class Environment():
 
         self.res_dir = utils.check_dir(self.root_dir / "data" / "results" / name)
 
-        comp = compositor.ImageCompositor(self.res_dir)
+        #comp = compositor.ImageCompositor(self.res_dir)
 
         self.sta = starcat.StarCatalog(self.res_dir)
 
@@ -69,16 +72,16 @@ class Environment():
         self.timesampler_mode = 1
         self.slowmotion_factor = 10
 
-        self.with_backgroundstars = True
+        self.with_backgroundstars = False
         self.with_sssbonly = True
-        self.with_sssbconstdist = True
-        self.with_lightingref = True
+        self.with_sssbconstdist = False
+        self.with_lightingref = False
 
         self.asteroid_scenes = []
 
         self.render_settings = dict()
         self.render_settings["exposure"] = 1.554
-        self.render_settings["samples"] = 48
+        self.render_settings["samples"] = 16
         self.render_settings["device"] = "GPU"
         self.render_settings["tile"] = 512
         self.render_settings["res"] = (2464, 2048)
@@ -96,7 +99,7 @@ class Environment():
         self.setup_renderer()
 
         # Setup Sun
-        self.setup_sun()
+        #self.setup_sun()
 
         # Setup SSSB
         self.setup_sssb()
@@ -105,16 +108,18 @@ class Environment():
         self.setup_spacecraft()
 
         # Setup Lightref
-        if self.with_lightingref:
-            self.setup_lightref()
+        #if self.with_lightingref:
+        #    self.setup_lightref()
 
     def setup_renderer(self):
         """Create renderer, apply common settings and create sc cam."""
 
         self.render_dir = utils.check_dir(self.res_dir / "rendering")
 
-        self.renderer = render.BlenderController(self.render_dir)
-        self.asteroid_scenes.append("MainScene")
+        #self.renderer = render.BlenderController(self.render_dir)
+        self.renderer = RenderController(self.render_dir)
+        # self.renderer.create_scene("MainScene")
+        # self.asteroid_scenes.append("MainScene")
 
         #if self.with_backgroundstars:
         #    self.renderer.create_scene("BackgroundStars")
@@ -145,17 +150,18 @@ class Environment():
 
     def setup_sun(self):
         """Create Sun and respective render object."""
-        sun_model_file = self.models_dir / "didymos_lowpoly.blend"
+        sun_model_file = self.models_dir / "didymos_lowpoly.obj"
         self.sun = CelestialBody("Sun", model_file=sun_model_file)
         self.sun.render_obj = self.renderer.load_object(self.sun.model_file, self.sun.name)
 
     def setup_sssb(self):
         """Create SmallSolarSystemBody and respective blender object."""
-        sssb_model_file = self.models_dir / "didymos2.blend"
+        sssb_model_file = self.models_dir / "didymos2.obj"
         self.sssb = SmallSolarSystemBody("Didymos", self.mu_sun, AbsoluteDate(
             2017, 8, 19, 0, 0, 0.000, self.ts), model_file=sssb_model_file)
-        self.sssb.render_obj = self.renderer.load_object(self.sssb.model_file, "Didymos.001", self.asteroid_scenes)
+        self.sssb.render_obj = self.renderer.load_object(str(self.sssb.model_file), "Didymos.001", self.asteroid_scenes)
         self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
+        self.sssb.render_obj.location = (0, 0, 0)
 
     def setup_spacecraft(self):
         """Create Spacecraft and respective blender object."""
@@ -169,7 +175,7 @@ class Environment():
 
     def setup_lightref(self):
         """Create lightreference blender object."""
-        lightref_model_file = self.models_dir / "didymos_lowpoly.blend"
+        lightref_model_file = self.models_dir / "didymos_lowpoly.obj"
         self.lightref = self.renderer.load_object(lightref_model_file, "CalibrationDisk", scenes="LightRef")
         self.lightref.location = (0, 0, 0)
 
@@ -208,8 +214,8 @@ class Environment():
             date_str = date_str.strftime("%Y-%m-%dT%H%M%S-%f")
 
             # Update environment
-            self.sun.render_obj.location = -np.asarray(sssb_pos.toArray()) / 1000.
-
+            #self.sun.render_obj.location = -np.asarray(sssb_pos.toArray()) / 1000.
+            self.renderer.set_sun_location(-np.asarray(sssb_pos.toArray()) / 1000.)
             # Update sssb and spacecraft
             pos_sc_rel_sssb = np.asarray(sc_pos.subtract(sssb_pos).toArray()) / 1000.
             self.renderer.set_camera_location("ScCam", pos_sc_rel_sssb)            
@@ -237,7 +243,7 @@ class Environment():
 
             # Render star background
             if self.with_backgroundstars:
-                fov_vecs = render.get_fov_vecs("ScCam", "MainScene")
+                fov_vecs = render.get_fov_vecs("ScCam", "SssbOnly")
                 ra, dec, width, height = render.get_fov(fov_vecs[1], fov_vecs[2], fov_vecs[3], fov_vecs[4])
                 starlist = self.sta.get_stardata(ra, dec, width, height)
                 fluxes = self.renderer.render_starmap(starlist, fov_vecs, self.render_settings["res"], date_str)
@@ -248,7 +254,7 @@ class Environment():
             metadict["distance"] = sc_pos.distance(sssb_pos)
             metadict["date"] = date_str
             metadict["sc_rel_pos"] = pos_sc_rel_sssb
-            metadict["total_flux"] = fluxes[0]
+            #metadict["total_flux"] = fluxes[0]
 
             self.write_meta_file(date_str, metadict)
 
