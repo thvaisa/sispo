@@ -3,6 +3,7 @@
 from datetime import datetime
 import json
 from pathlib import Path
+import os
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,6 +30,7 @@ import utils
 
 
 from synthspace.renderer import RenderController
+from synthspace.renderer import RenderObject
 
 class Environment():
     """Simulation environment."""
@@ -80,7 +82,7 @@ class Environment():
         self.asteroid_scenes = []
 
         self.render_settings = dict()
-        self.render_settings["exposure"] = 1.554
+        self.render_settings["exposure"] = 0.3
         self.render_settings["samples"] = 16
         self.render_settings["device"] = "GPU"
         self.render_settings["tile"] = 512
@@ -142,6 +144,16 @@ class Environment():
             self.renderer.create_camera("LightRefCam", scenes="LightRef")
             self.renderer.configure_camera("LightRefCam", **self.camera_settings)
 
+        if isinstance(self.renderer, RenderController):
+            self.renderer.set_scene_config({
+                'debug': True,
+                'flux_only': True,
+                'normalize': True,
+                'stars': True,
+                'lens_effects': True,          # includes the sun
+                'hapke_params': RenderObject.HAPKE_PARAMS,
+            })
+
         self.renderer.set_device(self.render_settings["device"])
         self.renderer.set_samples(self.render_settings["samples"])
         self.renderer.set_exposure(self.render_settings["exposure"])
@@ -156,10 +168,28 @@ class Environment():
 
     def setup_sssb(self):
         """Create SmallSolarSystemBody and respective blender object."""
-        sssb_model_file = self.models_dir / "didymos2.obj"
-        self.sssb = SmallSolarSystemBody("Didymos", self.mu_sun, AbsoluteDate(
-            2017, 8, 19, 0, 0, 0.000, self.ts), model_file=sssb_model_file)
-        self.sssb.render_obj = self.renderer.load_object(str(self.sssb.model_file), "Didymos.001", self.asteroid_scenes)
+        
+        if isinstance(self.renderer, RenderController):
+            sssb_model_file = self.res_dir / 'ryugu+tex-d1-16k.obj'
+            datapath = str(self.res_dir)
+            objfile1, url1 = os.path.join(datapath, 'ryugu+tex-d1-16k.obj'), 'https://drive.google.com/uc?authuser=0&id=1Lu48I4nnDKYtvArUN7TnfQ4b_MhSImKM&export=download'
+            objfile2, url2 = os.path.join(datapath, 'ryugu+tex-d1-16k.mtl'), 'https://drive.google.com/uc?authuser=0&id=1qf0YMbx5nIceGETqhNqePyVNZAmqNyia&export=download'
+            objfile3, url3 = os.path.join(datapath, 'ryugu.png'), 'https://drive.google.com/uc?authuser=0&id=19bT_Qd1MBfxM1wmnCgx6PT58ujnDFmsK&export=download'
+            RenderController.download_file(url1, objfile1, maybe=True)
+            RenderController.download_file(url2, objfile2, maybe=True)
+            RenderController.download_file(url3, objfile3, maybe=True)
+            self.sssb = SmallSolarSystemBody("ryugu", self.mu_sun, AbsoluteDate(
+                2017, 8, 19, 0, 0, 0.000, self.ts), model_file=sssb_model_file)
+        else:
+            sssb_model_file = self.models_dir / "didymos2.blend"
+            self.sssb = SmallSolarSystemBody("Didymos", self.mu_sun, AbsoluteDate(
+                2017, 8, 19, 0, 0, 0.000, self.ts), model_file=sssb_model_file)
+        
+        if isinstance(self.renderer, RenderController):
+            self.sssb.render_obj = self.renderer.load_object(os.path.join(datapath, 'ryugu+tex-d1-16k.obj'), 'ryugu-16k')
+        else:
+            self.sssb.render_obj = self.renderer.load_object(str(self.sssb.model_file), "Didymos.001", self.asteroid_scenes)
+        
         self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
         self.sssb.render_obj.location = (0, 0, 0)
 
@@ -215,9 +245,9 @@ class Environment():
 
             # Update environment
             #self.sun.render_obj.location = -np.asarray(sssb_pos.toArray()) / 1000.
-            self.renderer.set_sun_location(-np.asarray(sssb_pos.toArray()) / 1000.)
+            self.renderer.set_sun_location(-np.asarray(sssb_pos.toArray()))
             # Update sssb and spacecraft
-            pos_sc_rel_sssb = np.asarray(sc_pos.subtract(sssb_pos).toArray()) / 1000.
+            pos_sc_rel_sssb = np.asarray(sc_pos.subtract(sssb_pos).toArray())
             self.renderer.set_camera_location("ScCam", pos_sc_rel_sssb)            
 
             sssb_axis = sssb_rot.getAxis(self.sssb.rot_conv)
@@ -228,12 +258,12 @@ class Environment():
             
             # Update optional scenes/cameras
             if self.with_sssbconstdist:
-                pos_cam_const_dist = pos_sc_rel_sssb * 1000. / np.sqrt(np.dot(pos_sc_rel_sssb, pos_sc_rel_sssb))
+                pos_cam_const_dist = pos_sc_rel_sssb / np.sqrt(np.dot(pos_sc_rel_sssb, pos_sc_rel_sssb))
                 self.renderer.set_camera_location("SssbConstDistCam", pos_cam_const_dist)
                 self.renderer.target_camera(self.sssb.render_obj, "SssbConstDistCam")
 
             if self.with_lightingref:
-                lightrefcam_pos = -np.asarray(sssb_pos.toArray()) * 1000. /np.sqrt(np.dot(np.asarray(sssb_pos.toArray()),np.asarray(sssb_pos.toArray())))
+                lightrefcam_pos = -np.asarray(sssb_pos.toArray()) / np.sqrt(np.dot(np.asarray(sssb_pos.toArray()),np.asarray(sssb_pos.toArray())))
                 self.renderer.set_camera_location("LightRefCam", lightrefcam_pos)
                 self.renderer.target_camera(self.sun.render_obj, "CalibrationDisk")
                 self.renderer.target_camera(self.lightref, "LightRefCam")
