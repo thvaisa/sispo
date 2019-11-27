@@ -146,7 +146,7 @@ class Environment():
 
         if isinstance(self.renderer, RenderController):
             self.renderer.set_scene_config({
-                'debug': True,
+                'debug': False,
                 'flux_only': True,
                 'normalize': True,
                 'stars': True,
@@ -186,7 +186,7 @@ class Environment():
                 2017, 8, 19, 0, 0, 0.000, self.ts), model_file=sssb_model_file)
         
         if isinstance(self.renderer, RenderController):
-            self.sssb.render_obj = self.renderer.load_object(os.path.join(datapath, 'ryugu+tex-d1-16k.obj'), 'ryugu-16k')
+            self.sssb.render_obj = self.renderer.load_object(str(self.sssb.model_file), 'ryugu-16k')
         else:
             self.sssb.render_obj = self.renderer.load_object(str(self.sssb.model_file), "Didymos.001", self.asteroid_scenes)
         
