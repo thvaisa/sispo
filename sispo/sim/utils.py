@@ -192,6 +192,8 @@ def check_file_ext(filename, extension):
         raise RuntimeError("Wrong input type for file extension check.")
     
     if filename[-len(extension):] != extension:
+        if extension[0] != ".":
+            extension = "." + extension
         filename += extension
     
     if is_path:
