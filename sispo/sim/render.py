@@ -282,9 +282,10 @@ class BlenderController:
         camera.sensor_width = sensor.to(u.mm).value
         camera.type = mode
 
-    def set_camera_location(self, camera_name="Camera", location=(0, 0, 0)):
-        camera = bpy.data.objects[camera_name]
-        camera.location = location
+    def set_object_location(self, object_name="Object", location=(0, 0, 0)):
+        """Sets object location, converts m to km scale for blender."""
+        obj = bpy.data.objects[object_name]
+        obj.location = tuple(elem / 1000. for elem in location)
 
     def target_camera(self, target, camera_name="Camera"):
         """Target camera towards target."""
@@ -309,7 +310,8 @@ class BlenderController:
             self.update(scene)
             self.set_output_file(metainfo["date"], scene)
             bpy.ops.render.render(write_still=True, scene=scene.name)
-            self.save_blender_dfile(metainfo["date"], scene)
+
+        self.save_blender_dfile(metainfo["date"], scene)
 
         # Render star background
         res = (self.default_scene.render.resolution_x, 

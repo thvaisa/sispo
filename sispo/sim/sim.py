@@ -215,6 +215,7 @@ class Environment():
                                                          ["SssbOnly", 
                                                           "SssbConstDist"])
         self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
+        self.renderer.set_object_location(self.sssb.name)
 
     def setup_spacecraft(self):
         """Create Spacecraft and respective blender object."""
@@ -248,7 +249,7 @@ class Environment():
         self.lightref = self.renderer.load_object(lightref_model_file,
                                                   settings["model"]["name"],
                                                   scenes="LightRef")
-        self.lightref.location = (0, 0, 0)
+        self.renderer.set_object_location(self.lightref.name)
 
     def simulate(self):
         """Do simulation."""
@@ -292,25 +293,26 @@ class Environment():
             metainfo["date"] = date_str
 
             # Update environment
-            self.sun.render_obj.location = -np.asarray(sssb_pos.toArray()) / 1000.
+            self.renderer.set_object_location(self.sun.name, -np.asarray(sssb_pos.toArray()))
 
             # Update sssb and spacecraft
-            pos_sc_rel_sssb = np.asarray(sc_pos.subtract(sssb_pos).toArray()) / 1000.
-            self.renderer.set_camera_location("ScCam", pos_sc_rel_sssb)            
+            pos_sc_rel_sssb = np.asarray(sc_pos.subtract(sssb_pos).toArray())
+            self.renderer.set_object_location("ScCam", pos_sc_rel_sssb)            
 
             sssb_axis = sssb_rot.getAxis(self.sssb.rot_conv)
             sssb_angle = sssb_rot.getAngle()
-            self.sssb.render_obj.rotation_axis_angle = (sssb_angle, sssb_axis.x, sssb_axis.y, sssb_axis.z)       
+            rot = (sssb_angle, sssb_axis.x, sssb_axis.y, sssb_axis.z)
+            self.sssb.render_obj.rotation_axis_angle = rot
 
             self.renderer.target_camera(self.sssb.render_obj, "ScCam")
             
             # Update scenes/cameras
-            pos_cam_const_dist = pos_sc_rel_sssb * 1000. / np.sqrt(np.dot(pos_sc_rel_sssb, pos_sc_rel_sssb))
-            self.renderer.set_camera_location("SssbConstDistCam", pos_cam_const_dist)
+            pos_cam_const_dist = 1000. * pos_sc_rel_sssb / np.linalg.norm(pos_sc_rel_sssb)
+            self.renderer.set_object_location("SssbConstDistCam", pos_cam_const_dist)
             self.renderer.target_camera(self.sssb.render_obj, "SssbConstDistCam")
 
-            lightrefcam_pos = -np.asarray(sssb_pos.toArray()) * 1000. /np.sqrt(np.dot(np.asarray(sssb_pos.toArray()),np.asarray(sssb_pos.toArray())))
-            self.renderer.set_camera_location("LightRefCam", lightrefcam_pos)
+            lightrefcam_pos = -1e6 * 1. * np.asarray(sssb_pos.toArray()) / np.linalg.norm(np.asarray(sssb_pos.toArray()))
+            self.renderer.set_object_location("LightRefCam", lightrefcam_pos)
             self.renderer.target_camera(self.sun.render_obj, "CalibrationDisk")
             self.renderer.target_camera(self.lightref, "LightRefCam")
 
