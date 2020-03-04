@@ -307,7 +307,7 @@ class Environment():
             self.renderer.target_camera(self.sssb.render_obj, "ScCam")
             
             # Update scenes/cameras
-            pos_cam_const_dist = 1000. * pos_sc_rel_sssb / np.linalg.norm(pos_sc_rel_sssb)
+            pos_cam_const_dist = 1e3 * pos_sc_rel_sssb / np.linalg.norm(pos_sc_rel_sssb)
             self.renderer.set_object_location("SssbConstDistCam", pos_cam_const_dist)
             self.renderer.target_camera(self.sssb.render_obj, "SssbConstDistCam")
 
