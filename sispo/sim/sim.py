@@ -311,7 +311,7 @@ class Environment():
             self.renderer.set_object_location("SssbConstDistCam", pos_cam_const_dist)
             self.renderer.target_camera(self.sssb.render_obj, "SssbConstDistCam")
 
-            lightrefcam_pos = -1e6 * 1. * np.asarray(sssb_pos.toArray()) / np.linalg.norm(np.asarray(sssb_pos.toArray()))
+            lightrefcam_pos = -1e6 * np.asarray(sssb_pos.toArray()) / np.linalg.norm(np.asarray(sssb_pos.toArray()))
             self.renderer.set_object_location("LightRefCam", lightrefcam_pos)
             self.renderer.target_camera(self.sun.render_obj, "CalibrationDisk")
             self.renderer.target_camera(self.lightref, "LightRefCam")
