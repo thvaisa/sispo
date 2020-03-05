@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -23,8 +24,9 @@ from . import sc
 from .sc import *
 from . import sssb
 from .sssb import *
-from . import render
-from .render import *
+#from . import render
+#from .render import *
+from synthspace import renderer
 from . import utils
 
 
@@ -119,7 +121,7 @@ class Environment():
         self.setup_renderer()
 
         # Setup Sun
-        self.setup_sun(sun)
+        #self.setup_sun(sun)
 
         # Setup SSSB
         self.setup_sssb(sssb)
@@ -128,7 +130,7 @@ class Environment():
         self.setup_spacecraft()
 
         # Setup Lightref
-        self.setup_lightref(lightref)
+        #self.setup_lightref(lightref)
 
     def setup_renderer(self):
         """Create renderer, apply common settings and create sc cam."""
@@ -136,14 +138,16 @@ class Environment():
         render_dir = utils.check_dir(self.res_dir)
         raw_dir = utils.check_dir(render_dir / "raw")
 
-        self.renderer = render.BlenderController(render_dir,
-                                                 raw_dir, 
-                                                 self.starcat_dir,
-                                                 self.inst,
-                                                 self.sssb_settings,
-                                                 self.with_infobox,
-                                                 self.with_clipping,
-                                                 ext_logger=self.logger)
+        #self.renderer = render.BlenderController(render_dir,
+        #                                         raw_dir, 
+        #                                         self.starcat_dir,
+        #                                         self.inst,
+        #                                         self.sssb_settings,
+        #                                         self.with_infobox,
+        #                                         self.with_clipping,
+        #                                         ext_logger=self.logger)
+        self.renderer = renderer.RenderController(render_dir, self.logger)
+
         self.renderer.create_camera("ScCam")
         self.renderer.configure_camera("ScCam", 
                                        self.inst.focal_l,
@@ -160,6 +164,16 @@ class Environment():
         self.renderer.configure_camera("LightRefCam", 
                                        self.inst.focal_l,
                                        self.inst.chip_w)
+
+        if isinstance(self.renderer, renderer.RenderController):
+            self.renderer.set_scene_config({
+                'debug': True,
+                'flux_only': True,
+                'normalize': True,
+                'stars': True,
+                'lens_effects': True,          # includes the sun
+                'hapke_params': renderer.RenderObject.HAPKE_PARAMS,
+            })
 
         self.renderer.set_device(self.render_settings["device"], 
                                  self.render_settings["tile"])
@@ -191,30 +205,46 @@ class Environment():
 
     def setup_sssb(self, settings):
         """Create SmallSolarSystemBody and respective blender object."""
-        sssb_model_file = Path(settings["model"]["file"])
 
-        try:
-            sssb_model_file = sssb_model_file.resolve()
-        except OSError as e:
-            raise SimulationError(e)
+        if isinstance(self.renderer, renderer.RenderController):
+            sssb_model_file = self.models_dir / 'ryugu+tex-d1-16k.obj'
+            datapath = str(self.models_dir)
+            objfile1, url1 = os.path.join(datapath, 'ryugu+tex-d1-16k.obj'), 'https://drive.google.com/uc?authuser=0&id=1Lu48I4nnDKYtvArUN7TnfQ4b_MhSImKM&export=download'
+            objfile2, url2 = os.path.join(datapath, 'ryugu+tex-d1-16k.mtl'), 'https://drive.google.com/uc?authuser=0&id=1qf0YMbx5nIceGETqhNqePyVNZAmqNyia&export=download'
+            objfile3, url3 = os.path.join(datapath, 'ryugu.png'), 'https://drive.google.com/uc?authuser=0&id=19bT_Qd1MBfxM1wmnCgx6PT58ujnDFmsK&export=download'
+            renderer.RenderController.download_file(url1, objfile1, maybe=True)
+            renderer.RenderController.download_file(url2, objfile2, maybe=True)
+            renderer.RenderController.download_file(url3, objfile3, maybe=True)
+            self.sssb = SmallSolarSystemBody("ryugu", self.mu_sun, settings["trj"], settings["att"], model_file=sssb_model_file)
 
-        if not sssb_model_file.is_file():
-                sssb_model_file = self.models_dir / sssb_model_file.name
+            self.sssb.render_obj = self.renderer.load_object(os.path.join(datapath, 'ryugu+tex-d1-16k.obj'), 'ryugu-16k')
+        else:
+            sssb_model_file = Path(settings["model"]["file"])
+
+            try:
                 sssb_model_file = sssb_model_file.resolve()
-        
-        if not sssb_model_file.is_file():
-            raise SimulationError("Given SSSB model filename does not exist.")
+            except OSError as e:
+                raise SimulationError(e)
 
-        self.sssb = SmallSolarSystemBody(settings["model"]["name"],
-                                         self.mu_sun, 
-                                         settings["trj"],
-                                         settings["att"],
-                                         model_file=sssb_model_file)
-        self.sssb.render_obj = self.renderer.load_object(self.sssb.model_file,
-                                                         settings["model"]["name"],
-                                                         ["SssbOnly", 
-                                                          "SssbConstDist"])
+            if not sssb_model_file.is_file():
+                    sssb_model_file = self.models_dir / sssb_model_file.name
+                    sssb_model_file = sssb_model_file.resolve()
+
+            if not sssb_model_file.is_file():
+                raise SimulationError("Given SSSB model filename does not exist.")
+
+            self.sssb = SmallSolarSystemBody(settings["model"]["name"],
+                                             self.mu_sun, 
+                                             settings["trj"],
+                                             settings["att"],
+                                             model_file=sssb_model_file)
+            self.sssb.render_obj = self.renderer.load_object(self.sssb.model_file,
+                                                             settings["model"]["name"])#,
+                                                             #["SssbOnly"]), 
+                                                              #"SssbConstDist"])
+        
         self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
+        self.sssb.render_obj.location = (0, 0, 0)
 
     def setup_spacecraft(self):
         """Create Spacecraft and respective blender object."""
@@ -292,10 +322,11 @@ class Environment():
             metainfo["date"] = date_str
 
             # Update environment
-            self.sun.render_obj.location = -np.asarray(sssb_pos.toArray()) / 1000.
+            #self.sun.render_obj.location = -np.asarray(sssb_pos.toArray())
+            self.renderer.set_sun_location(-np.asarray(sssb_pos.toArray()))
 
             # Update sssb and spacecraft
-            pos_sc_rel_sssb = np.asarray(sc_pos.subtract(sssb_pos).toArray()) / 1000.
+            pos_sc_rel_sssb = np.asarray(sc_pos.subtract(sssb_pos).toArray())
             self.renderer.set_camera_location("ScCam", pos_sc_rel_sssb)            
 
             sssb_axis = sssb_rot.getAxis(self.sssb.rot_conv)
@@ -305,14 +336,14 @@ class Environment():
             self.renderer.target_camera(self.sssb.render_obj, "ScCam")
             
             # Update scenes/cameras
-            pos_cam_const_dist = pos_sc_rel_sssb * 1000. / np.sqrt(np.dot(pos_sc_rel_sssb, pos_sc_rel_sssb))
+            pos_cam_const_dist = pos_sc_rel_sssb / np.sqrt(np.dot(pos_sc_rel_sssb, pos_sc_rel_sssb))
             self.renderer.set_camera_location("SssbConstDistCam", pos_cam_const_dist)
             self.renderer.target_camera(self.sssb.render_obj, "SssbConstDistCam")
 
-            lightrefcam_pos = -np.asarray(sssb_pos.toArray()) * 1000. /np.sqrt(np.dot(np.asarray(sssb_pos.toArray()),np.asarray(sssb_pos.toArray())))
-            self.renderer.set_camera_location("LightRefCam", lightrefcam_pos)
-            self.renderer.target_camera(self.sun.render_obj, "CalibrationDisk")
-            self.renderer.target_camera(self.lightref, "LightRefCam")
+            #lightrefcam_pos = -np.asarray(sssb_pos.toArray()) / np.sqrt(np.dot(np.asarray(sssb_pos.toArray()),np.asarray(sssb_pos.toArray())))
+            #self.renderer.set_camera_location("LightRefCam", lightrefcam_pos)
+            #self.renderer.target_camera(self.sun.render_obj, "CalibrationDisk")
+            #self.renderer.target_camera(self.lightref, "LightRefCam")
 
             # Render blender scenes
             self.renderer.render(metainfo)
