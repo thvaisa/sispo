@@ -1,20 +1,28 @@
 ## Project specific additional gitignores
-# Directories
-temp/*
-data/*
-!data/README.md
-software/*
-!software/README.md
-
-
 # File types
 *.txt
 *.sln
 *.pyproj
 
+# Directories
+temp/*
+data/*
+doc/build/
+!doc/source/requirements.txt
+!data/README.md
+!data/input/definition.json
+!data/models/sssb.blend
+!data/models/didymos_lowpoly.blend
+software/*
+!software/README.md
 
 ## Ignore mypy files
 .mypy_cache/*
+
+## Ignore building files
+build/lib/*
+*egg-info
+dist/*
 
 ## Ignore Visual Stdio Code settings
 .vscode/*
