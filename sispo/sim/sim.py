@@ -148,26 +148,27 @@ class Environment():
         #                                         ext_logger=self.logger)
         self.renderer = renderer.RenderController(render_dir, self.logger)
 
+        self.renderer.create_scene("SssbOnly")
         self.renderer.create_camera("ScCam")
         self.renderer.configure_camera("ScCam", 
                                        self.inst.focal_l,
                                        self.inst.chip_w)
 
-        self.renderer.create_scene("SssbConstDist")
-        self.renderer.create_camera("SssbConstDistCam", scenes="SssbConstDist")
-        self.renderer.configure_camera("SssbConstDistCam", 
-                                       self.inst.focal_l,
-                                       self.inst.chip_w)
+        #self.renderer.create_scene("SssbConstDist")
+        #self.renderer.create_camera("SssbConstDistCam", scenes="SssbConstDist")
+        #self.renderer.configure_camera("SssbConstDistCam", 
+        #                               self.inst.focal_l,
+        #                               self.inst.chip_w)
 
-        self.renderer.create_scene("LightRef")
-        self.renderer.create_camera("LightRefCam", scenes="LightRef")
-        self.renderer.configure_camera("LightRefCam", 
-                                       self.inst.focal_l,
-                                       self.inst.chip_w)
+        #self.renderer.create_scene("LightRef")
+        #self.renderer.create_camera("LightRefCam", scenes="LightRef")
+        #self.renderer.configure_camera("LightRefCam", 
+        #                               self.inst.focal_l,
+        #                               self.inst.chip_w)
 
         if isinstance(self.renderer, renderer.RenderController):
             self.renderer.set_scene_config({
-                'debug': True,
+                'debug': False,
                 'flux_only': True,
                 'normalize': True,
                 'stars': True,
@@ -217,7 +218,7 @@ class Environment():
             renderer.RenderController.download_file(url3, objfile3, maybe=True)
             self.sssb = SmallSolarSystemBody("ryugu", self.mu_sun, settings["trj"], settings["att"], model_file=sssb_model_file)
 
-            self.sssb.render_obj = self.renderer.load_object(os.path.join(datapath, 'ryugu+tex-d1-16k.obj'), 'ryugu-16k')
+            self.sssb.render_obj = self.renderer.load_object(str(self.sssb.model_file), 'ryugu-16k')
         else:
             sssb_model_file = Path(settings["model"]["file"])
 
@@ -336,15 +337,15 @@ class Environment():
             self.renderer.target_camera(self.sssb.render_obj, "ScCam")
             
             # Update scenes/cameras
-            pos_cam_const_dist = pos_sc_rel_sssb / np.sqrt(np.dot(pos_sc_rel_sssb, pos_sc_rel_sssb))
-            self.renderer.set_camera_location("SssbConstDistCam", pos_cam_const_dist)
-            self.renderer.target_camera(self.sssb.render_obj, "SssbConstDistCam")
+            #pos_cam_const_dist = pos_sc_rel_sssb / np.sqrt(np.dot(pos_sc_rel_sssb, pos_sc_rel_sssb))
+            #self.renderer.set_camera_location("SssbConstDistCam", pos_cam_const_dist)
+            #self.renderer.target_camera(self.sssb.render_obj, "SssbConstDistCam")
 
             #lightrefcam_pos = -np.asarray(sssb_pos.toArray()) / np.sqrt(np.dot(np.asarray(sssb_pos.toArray()),np.asarray(sssb_pos.toArray())))
             #self.renderer.set_camera_location("LightRefCam", lightrefcam_pos)
             #self.renderer.target_camera(self.sun.render_obj, "CalibrationDisk")
             #self.renderer.target_camera(self.lightref, "LightRefCam")
-
+            
             # Render blender scenes
             self.renderer.render(metainfo)
 
