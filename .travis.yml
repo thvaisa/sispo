@@ -4,8 +4,6 @@ python:
 install:
   #- sudo apt-get update
   - cd ~
-  - pwd
-  - ls -l
   - chmod + YgabrielsY/sispo/build/blender/temp_install.sh
   - cd YgabrielsY/sispo/build/blender
   - ./temp_install.sh
