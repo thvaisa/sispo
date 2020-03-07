@@ -3,11 +3,8 @@ python:
   - "3.7"
 install:
   #- sudo apt-get update
-  - cd ~
-  - chmod + YgabrielsY/sispo/build/blender/temp_install.sh
-  - cd YgabrielsY/sispo/build/blender
-  - ./temp_install.sh
-  - cd ~
+  - chmod + build/blender/temp_install.sh
+  - ./build/blender/temp_install.sh
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
