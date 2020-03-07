@@ -21,7 +21,16 @@ git submodule foreach pull --rebase origin master
 # Update files
 make update
 
-# Build
-make bpy
-
-cd ../..
+# Configure and install blender bpy
+cd ..
+[[ -d build_blender_bpy ]] || mkdir build_blender_bpy
+cd build_blender_bpy
+cmake \
+	-C ../blender/build_files/cmake/config/bpy_module.cmake \
+	-S ../blender \
+    -DWITH_IMAGE_OPENEXR=ON \
+    -DPYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
+    #-DPYTHON_LIBRARY=/home/travis/miniconda/envs/sispo/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.so \
+    #-DPYTHON_LIBPATH=/home/travis/miniconda/envs/sispo/lib \
+    #-DPYTHON_INCLUDE_DIR=/home/travis/miniconda/envs/sispo/include \
+    #-DPYTHON_INCLUDE_CONFIG_DIR=/home/travis/miniconda/envs/sispo/lib/python3.7/config-3.7m-x86_64-linux-gnu
