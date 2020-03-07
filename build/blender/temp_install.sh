@@ -3,7 +3,7 @@
 echo "Installing blender as a python module start"
 
 # Creating blender directory
-cd ~
+cd software
 [[ -d blender ]] || mkdir blender
 cd blender
 
@@ -15,10 +15,8 @@ git submodule foreach git checkout master
 git submodule foreach pull --rebase origin master
 
 # Dependencies
-cd ~/blender/blender/build_files/build_environment
-chmod +x install_deps.sh
-./install_deps.sh
-cd ~/blender/blender
+chmod +x build_files/build_environment/install_deps.sh
+./build_files/build_environment/install_deps.sh --with-all --no-confirm
 
 # Update files
 make update
@@ -26,3 +24,4 @@ make update
 # Build
 make bpy
 
+cd ../..
