@@ -20,5 +20,5 @@ install:
   # Create and activate environment from environment.yml
   - conda env create -f environment.yml
   - conda activate sispo
-  - python setup.py install
+  - python setup.py bdist_wheel
 script: python test_basics.py
