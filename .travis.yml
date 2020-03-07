@@ -1,8 +1,11 @@
+os: linux
+dist: bionic
 language: python
 python:
   - "3.7"
 install:
   - sudo apt-get update
+  - sudo apt-get install build-essential git subversion cmake libx11-dev libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
   - chmod +x build/blender/temp_install.sh
   - ./build/blender/temp_install.sh
   # We do this conditionally because it saves us some downloading if the

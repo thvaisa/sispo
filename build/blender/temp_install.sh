@@ -15,8 +15,8 @@ git submodule foreach git checkout master
 git submodule foreach pull --rebase origin master
 
 # Dependencies
-chmod +x build_files/build_environment/install_deps.sh
-./build_files/build_environment/install_deps.sh --with-all --no-confirm
+#chmod +x build_files/build_environment/install_deps.sh
+#./build_files/build_environment/install_deps.sh --with-all --no-confirm
 
 # Update files
 make update
