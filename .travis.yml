@@ -3,6 +3,8 @@ python:
   - "3.7"
 install:
   #- sudo apt-get update
+  - cd YgabrielsY/sispo
+  - pwd
   - chmod + YgabrielsY/sispo/build/blender/temp_install.sh
   - cd YgabrielsY/sispo/build/blender
   - ./temp_install.sh
