@@ -3,7 +3,7 @@ python:
   - "3.7"
 install:
   #- sudo apt-get update
-  - chmod + build/blender/temp_install.sh
+  - chmod +x build/blender/temp_install.sh
   - ./build/blender/temp_install.sh
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
