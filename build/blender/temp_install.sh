@@ -16,12 +16,13 @@ git submodule foreach pull --rebase origin master
 
 # Dependencies
 chmod +x build_files/build_environment/install_deps.sh
-./build_files/build_environment/install_deps.sh --with-all --no-confirm
+./build_files/build_environment/install_deps.sh --with-all --no-confirm --skip-oidn --skip-osd --force-osl
 
 # Update files
 make update
 
 # Bpy
+export PYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
 make bpy
 make install
 

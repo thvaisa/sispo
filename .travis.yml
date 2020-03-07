@@ -5,7 +5,6 @@ python:
   - "3.7"
 install:
   - sudo apt-get update
-  - sudo apt-get install build-essential git subversion cmake libx11-dev libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
@@ -23,7 +22,13 @@ install:
   # Create and activate environment from environment.yml
   - conda env create -f environment.yml
   - conda activate sispo
+  - sudo apt-get install build-essential git subversion cmake libx11-dev libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
   - chmod +x build/blender/temp_install.sh
   - ./build/blender/temp_install.sh
-  - python setup.py bdist_wheel
+  #- python setup.py bdist_wheel
 script: python test_basics.py
+cache:
+  apt: true
+  directories:
+  - software/blender
+  - ~/src/blender-deps
