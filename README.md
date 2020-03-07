@@ -2,6 +2,7 @@
 
 [![sispo](https://img.shields.io/badge/powered%20by-sispo-orange?style=flat)](https://github.com/YgabrielsY/sispo)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3661054.svg)](https://doi.org/10.5281/zenodo.3661054)
+[![CI](https://travis-ci.com/YgabrielsY/sispo.svg?branch=gab_travis_ci)](https://travis-ci.com/YgabrielsY/sispo.svg?branch=gab_travis_ci)
 
 ## Documentation: 
 
