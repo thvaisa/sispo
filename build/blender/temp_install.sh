@@ -13,6 +13,7 @@ else
     git clone https://git.blender.org/blender.git
 fi
 cd blender
+git checkout tags/v2.81
 
 # Dependencies
 chmod +x build_files/build_environment/install_deps.sh
