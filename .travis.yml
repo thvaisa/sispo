@@ -28,9 +28,9 @@ install:
   - ./build/blender/temp_install.sh
   - python setup.py bdist_wheel
 script: python test_basics.py
-cache:
-  apt: true
-  directories:
-  - software/blender
-  - /home/travis/src
-  - /opt/lib
+#cache:
+#  apt: true
+#  directories:
+#  - software/blender
+#  - /home/travis/src
+#  - /opt/lib
