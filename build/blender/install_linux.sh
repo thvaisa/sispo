@@ -17,6 +17,7 @@ cd blender
 # Update files and use version 2.81
 make update
 git checkout tags/v2.81
+make update
 
 # Dependencies
 chmod +x build_files/build_environment/install_deps.sh
