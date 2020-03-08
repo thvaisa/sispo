@@ -24,12 +24,11 @@ install:
   # Create and activate environment from environment.yml
   - conda env create -f environment.yml
   - conda activate sispo
-  - chmod +x build/blender/temp_install.sh
-  - ./build/blender/temp_install.sh
+  - chmod +x build/blender/install_linux.sh
+  - ./build/blender/install_linux.sh
   - python setup.py bdist_wheel
 script: python test_basics.py
 #cache:
-#  apt: true
 #  directories:
 #  - software/blender
 #  - /home/travis/src
