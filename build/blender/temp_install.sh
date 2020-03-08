@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ -f /home/travis/build/YgabrielsY/sispo/software/blender/build_linux_bpy/bin/bpy.so ]]; then
     echo "Using cached bpy"
-    cd software/blender/build_blender_bpy
+    cd software/blender/build_linux_bpy
     make install
 else
     echo "Installing blender as a python module start"
