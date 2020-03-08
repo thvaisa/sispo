@@ -16,7 +16,7 @@ cd blender
 
 # Dependencies
 chmod +x build_files/build_environment/install_deps.sh
-./build_files/build_environment/install_deps.sh --with-all --no-confirm --skip-oidn --skip-osd
+./build_files/build_environment/install_deps.sh --with-all --no-confirm
 
 # Update files
 make update

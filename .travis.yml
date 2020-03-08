@@ -33,3 +33,4 @@ cache:
   directories:
   - software/blender
   - /home/travis/src
+  - /opt/lib
