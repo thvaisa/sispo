@@ -1,6 +1,6 @@
 #!/bin/bash
-if [[ -d /home/travis/build/YgabrielsY/sispo/software/blender/build_blender_bpy/bin ]]; then
-    echo Using cached
+if [[ -f /home/travis/build/YgabrielsY/sispo/software/blender/build_linux_bpy/bin/bpy.so ]]; then
+    echo "Using cached bpy"
     cd software/blender/build_blender_bpy
     make install
 else
