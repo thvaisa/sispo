@@ -25,7 +25,6 @@ make update
 BUILD_CMAKE_ARGS="-DPYTHON_SITE_PACKAGES:FILEPATH=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages"
 export BUILD_CMAKE_ARGS
 make bpy
-make install
 
 # Configure and install blender bpy
 #make bpy nobuild
