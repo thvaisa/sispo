@@ -32,4 +32,4 @@ cache:
   apt: true
   directories:
   - software/blender
-  - /home/travis/src/blender-deps
+  - /home/travis/src

@@ -12,7 +12,11 @@ cd software
 cd blender
 
 # Get blender repo
-git clone https://git.blender.org/blender.git
+if [[ -d software/blender ]]; then
+    echo "Blender folder exists, no cloning"
+else
+    git clone https://git.blender.org/blender.git
+fi
 cd blender
 #git submodule update --init --recursive
 #git submodule foreach git checkout master
