@@ -26,8 +26,8 @@ install:
   - conda activate sispo
   - chmod +x build/blender/temp_install.sh
   - ./build/blender/temp_install.sh
-script:
   - python setup.py bdist_wheel
+script: python test_basics.py
 cache:
   apt: true
   directories:
