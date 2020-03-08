@@ -22,19 +22,19 @@ chmod +x build_files/build_environment/install_deps.sh
 make update
 
 # Bpy
-#PYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
-#export 
-#make bpy PYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
-#make install PYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
+BUILD_CMAKE_ARGS="-DPYTHON_SITE_PACKAGES:FILEPATH=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages"
+export BUILD_CMAKE_ARGS
+make bpy
+make install
 
 # Configure and install blender bpy
-make bpy nobuild
-cd ..
-[[ -d build_blender_bpy ]] || mkdir build_blender_bpy
-cd build_blender_bpy
-cmake --build . -DPYTHON_SITE_PACKAGES:FILEPATH=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
-cd ../blender
-make install
+#make bpy nobuild
+#cd ..
+#[[ -d build_blender_bpy ]] || mkdir build_blender_bpy
+#cd build_blender_bpy
+#cmake --build . -DPYTHON_SITE_PACKAGES:FILEPATH=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
+#cd ../blender
+#make install
 
 #cmake \
 #	-C ../blender/build_files/cmake/config/bpy_module.cmake \
