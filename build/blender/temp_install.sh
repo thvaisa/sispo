@@ -1,5 +1,5 @@
 #!/bin/bash
-if -d /home/travis/build/YgabrielsY/sispo/software/blender/build_blender_bpy/bin; then
+if [[ -d /home/travis/build/YgabrielsY/sispo/software/blender/build_blender_bpy/bin ]]; then
     echo Using cached
     cd software/blender/build_blender_bpy
     make install
