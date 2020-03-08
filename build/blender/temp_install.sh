@@ -24,10 +24,11 @@ make update
 # Bpy
 #PYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
 #export 
-make bpy --no-build
-#make install
+#make bpy PYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
+#make install PYTHON_SITE_PACKAGES=/home/travis/miniconda/envs/sispo/lib/python3.7/site-packages
 
 # Configure and install blender bpy
+make bpy nobuild
 cd ..
 [[ -d build_blender_bpy ]] || mkdir build_blender_bpy
 cd build_blender_bpy
