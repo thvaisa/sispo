@@ -17,7 +17,7 @@ git checkout tags/v2.81
 
 # Dependencies
 chmod +x build_files/build_environment/install_deps.sh
-./build_files/build_environment/install_deps.sh --with-all --no-confirm
+./build_files/build_environment/install_deps.sh --source ../lib/src --with-all --no-confirm
 
 # Update files
 make update
