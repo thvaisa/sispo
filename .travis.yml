@@ -29,9 +29,7 @@ install:
   - python setup.py bdist_wheel
 before_script: python -c "import bpy; bpy.ops.render.render(write_still=True)"
 script: python test_basics.py
-#cache:
-#  apt: true
-#  directories:
-#  - software/blender
-#  - /home/travis/src
-#  - /opt/lib
+cache:
+  directories:
+  - software/blender/blender
+  - software/blender/blender_linux_bpy
