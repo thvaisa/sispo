@@ -27,8 +27,9 @@ install:
   - chmod +x build/blender/install_linux.sh
   - ./build/blender/install_linux.sh
   - python setup.py bdist_wheel
-before_script: python -c "import bpy; bpy.ops.render.render(write_still=True)"
 script: python test_basics.py
-cache:
-  directories:
-  - software/blender
+#cache:
+#  directories:
+#  - software/blender
+#  - /home/travis/src
+#  - /opt/lib
