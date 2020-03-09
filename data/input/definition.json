@@ -5,7 +5,7 @@
     "simulation":
     {
         "res_dir": "data/results/default/rendering",
-        "duration": 120,
+        "duration": 2,
         "encounter_date": 
         {
             "year": 2017,
@@ -15,7 +15,7 @@
             "minutes": 0,
             "seconds": 0.0
         },
-        "frames": 120,
+        "frames": 2,
         "encounter_distance": 1E5,
         "relative_velocity": 10000,
         "with_terminator": 0,
