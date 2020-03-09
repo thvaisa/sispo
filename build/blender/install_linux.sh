@@ -7,7 +7,7 @@ cd software
 cd blender
 
 # Get blender repo
-if [[ -d blender ]]; then
+if [[ -f blender/CMakeLists.txt ]]; then
     echo "Blender folder exists, no cloning"
 else
     git clone https://git.blender.org/blender.git
