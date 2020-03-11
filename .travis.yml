@@ -28,7 +28,7 @@ install:
   - ./build/blender/install_linux.sh
   - python setup.py bdist_wheel
 before_script: python test_basics.py
-script: python -c "sispo.run" -m sispo
+script: python -c "import sispo; sispo.run()"
 cache:
   directories:
   - software/blender/blender
