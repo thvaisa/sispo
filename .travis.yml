@@ -27,7 +27,9 @@ install:
   - chmod +x build/blender/install_linux.sh
   - ./build/blender/install_linux.sh
   - python setup.py bdist_wheel
-before_script: python test_basics.py
+before_script: 
+  - python test_basics.py
+  - mkdir data/results
 script: python -c "import sispo; sispo.run()"
 cache:
   directories:
