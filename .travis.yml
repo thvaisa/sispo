@@ -26,7 +26,7 @@ install:
   - conda activate sispo
   - chmod +x build/blender/install_linux.sh
   - chmod +x build/data/download_ucac4.sh
-  - ./build/blender/install_linux.sh & ./build/blender/download_ucac4.sh
+  - ./build/blender/install_linux.sh & ./build/data/download_ucac4.sh
   - python setup.py bdist_wheel
 before_script: 
   - python test_basics.py
