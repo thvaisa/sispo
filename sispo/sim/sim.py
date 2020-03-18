@@ -27,7 +27,6 @@ from . import render
 from .render import *
 from . import utils
 
-
 class SimulationError(RuntimeError):
     """Generic simulation error."""
     pass
@@ -63,7 +62,8 @@ class Environment():
                  samples,
                  device,
                  tile_size,
-                 ext_logger=None):
+                 ext_logger=None,
+                 **args):
 
         if ext_logger is not None:
             self.logger = ext_logger
@@ -129,6 +129,8 @@ class Environment():
 
         # Setup Lightref
         self.setup_lightref(lightref)
+
+
 
     def setup_renderer(self):
         """Create renderer, apply common settings and create sc cam."""
@@ -215,6 +217,10 @@ class Environment():
                                                          ["SssbOnly", 
                                                           "SssbConstDist"])
         self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
+
+
+
+
 
     def setup_spacecraft(self):
         """Create Spacecraft and respective blender object."""

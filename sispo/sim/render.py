@@ -166,7 +166,6 @@ class BlenderController:
 
         if device in ("AUTO", "GPU"):
             device_types = {device.type for device in devices}
-
             if "CUDA" in device_types:
                 used_device = "GPU"
             else:
