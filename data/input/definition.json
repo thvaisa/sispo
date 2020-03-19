@@ -91,14 +91,21 @@
         "tail":
         {
                 "dust_simulator": "software/build_des/des",
-                "data_processing": "software/build_dec/DKE",
+                "data_processing": "software/build_des/DKE",
                 "solar_radiation_coefficient" : 0.9,
-                "max_dist_from_comet": 400000,
-                "particles_per_each_step": 1000,
+                "max_dist_from_comet": 10000,
+                "particles_per_each_step": 10000,
                 "n_time_steps" : 100,
                 "k_coeff" : 0.3333,
-                "tmp_arg_path" : "data/tmp/args_det.txt",
-                "tmp_output_dir" : "data/tmp/"
+                "tmp_s_arg_path" : "data/tmp/args_s_det.txt",
+                "tmp_output_dir" : "data/tmp/",
+                "tmp_output_fname" : "output",
+                "dke_std" : 0.1,
+                "dke_scale" : 1.0e-3,
+                "dke_nPs" : 100,
+                "dke_output_path" : "data/tmp/p",
+                "model" : "data/models/tail.blend",
+                "model_name" : "Tail"
         }
     },
     "compression":

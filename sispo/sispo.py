@@ -29,7 +29,7 @@ from .compression import *
 from .reconstruction import *
 from .sim import *
 from .sim import utils
-from .sim import comettail as ct
+
 
 logger = logging.getLogger("sispo")
 logger.setLevel(logging.DEBUG)
@@ -298,15 +298,12 @@ def main():
 
         if settings["options"].with_sim:
             env.simulate()
-            
 
-            ##Simulate comet tail
-            tail = ct.CometTail(settings["simulation"])
-            tail.run(env,settings["simulation"])
                         
-
         if settings["options"].with_render:
             env.render()
+
+
 
     if settings["options"].with_compression:
         logger.debug("With compression")

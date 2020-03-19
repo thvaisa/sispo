@@ -26,6 +26,8 @@ from .sssb import *
 from . import render
 from .render import *
 from . import utils
+from . import comettail as ct
+
 
 class SimulationError(RuntimeError):
     """Generic simulation error."""
@@ -46,6 +48,7 @@ class Environment():
                  instrument,
                  with_infobox,
                  with_clipping,
+                 tail,
                  sssb,
                  sun,
                  lightref,
@@ -62,8 +65,7 @@ class Environment():
                  samples,
                  device,
                  tile_size,
-                 ext_logger=None,
-                 **args):
+                 ext_logger=None):
 
         if ext_logger is not None:
             self.logger = ext_logger
@@ -130,6 +132,8 @@ class Environment():
         # Setup Lightref
         self.setup_lightref(lightref)
 
+        self.tail = ct.CometTail(tail)
+        self.tail.prepare_renderer(self.renderer)
 
 
     def setup_renderer(self):
@@ -218,6 +222,8 @@ class Environment():
                                                           "SssbConstDist"])
         self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
 
+        
+       
 
 
 
@@ -256,6 +262,7 @@ class Environment():
                                                   scenes="LightRef")
         self.lightref.location = (0, 0, 0)
 
+
     def simulate(self):
         """Do simulation."""
         self.logger.debug("Starting simulation")
@@ -277,10 +284,16 @@ class Environment():
         self.logger.debug("Simulation completed")
         self.save_results()
 
+
+
+
     def render(self):
         """Render simulation scenario."""
         self.logger.debug("Rendering simulation")
 
+
+        ##Change to more robust approach later
+        i = -1
         # Render frame by frame
         for (date, sc_pos, sssb_pos, sssb_rot) in zip(self.spacecraft.date_history,
                                                       self.spacecraft.pos_history,
@@ -289,6 +302,11 @@ class Environment():
 
             date_str = datetime.strptime(date.toString(), "%Y-%m-%dT%H:%M:%S.%f")
             date_str = date_str.strftime("%Y-%m-%dT%H%M%S-%f")
+            i=i+1
+            if(self.tail is not None):
+                self.tail.run(self,date)    
+                self.tail.modify_renderer()
+            
 
             # metadict creation
             metainfo = dict()
@@ -324,6 +342,9 @@ class Environment():
             self.renderer.render(metainfo)
 
         self.logger.debug("Rendering completed")
+
+
+
 
     def save_results(self):
         """Save simulation results to a file."""
