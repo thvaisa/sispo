@@ -92,9 +92,9 @@
         {
                 "dust_simulator": "software/build_des/des",
                 "data_processing": "software/build_des/DKE",
-                "solar_radiation_coefficient" : 0.9,
+                "solar_radiation_coefficient" : 0.8,
                 "max_dist_from_comet": 10000,
-                "particles_per_each_step": 10000,
+                "particles_per_each_step": 100000,
                 "n_time_steps" : 100,
                 "k_coeff" : 0.3333,
                 "tmp_s_arg_path" : "data/tmp/args_s_det.txt",

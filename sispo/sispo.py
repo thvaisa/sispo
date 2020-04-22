@@ -96,7 +96,7 @@ def read_input():
     """
     parser = _create_parser()
     args = parser.parse_args()
-
+    
     if args.version:
         print(f"v{__version__}")
         return None
@@ -136,6 +136,7 @@ def read_input():
         if args.name is not None:
             settings["name"] = args.name
 
+    print(settings["options"].with_render)
     return settings
 
 
@@ -299,7 +300,7 @@ def main():
         if settings["options"].with_sim:
             env.simulate()
 
-                        
+        print(settings["options"].with_render)            
         if settings["options"].with_render:
             env.render()
 

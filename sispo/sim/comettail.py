@@ -81,7 +81,6 @@ class CometTail():
         self.create_parameters(env,date)
         data_file = self.run_simulation(self.dust_simulation, self.simulation_args_path)
 
-        print("simulation ready")
         self.process_data(data_file,
                             self.data_processing,
                             self.dke_std, self.dke_scale, 
@@ -91,9 +90,11 @@ class CometTail():
     ##Tell to use the executable (dust_simulation) and read arguments from
     ##(simulation args paths)
     def run_simulation(self,dust_simulation,simulation_args_path):
+        print("Run dust particle simulation")
         cmd = [dust_simulation, simulation_args_path]
         output =subprocess.run(cmd, capture_output=True)
         output = output.stdout.decode("utf-8").strip().split()
+        print("simulation ready")
         return output[-1]
         
 
@@ -104,7 +105,7 @@ class CometTail():
                     std,scale,nPs,
                     output_file):
 
-
+        print("processing data")
         self.output_store = []
         ##executable,point cloud data, input, 
         cmd = [data_processor,input_fname,str(0),
@@ -123,7 +124,7 @@ class CometTail():
         with open(aux_file, "r") as f:
             person_dict = json.load(f)
         self.output_store.append(person_dict)
-
+        print("finished")
   
     ##Set parameters to the renderer
     def prepare_renderer(self,renderer):
