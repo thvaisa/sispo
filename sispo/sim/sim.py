@@ -317,7 +317,7 @@ class Environment():
             metainfo["distance"] = sc_pos.distance(sssb_pos)
             metainfo["date"] = date_str
 
-            orig_transform = self.set_rotation(sssb_rot, self.sssb)
+            self.set_rotation(sssb_rot, self.sssb)
 
             # Update environment
             self.sun.render_obj.location = -np.asarray(sssb_pos.toArray()) / 1000.
@@ -340,9 +340,6 @@ class Environment():
 
             # Render blender scenes
             self.renderer.render(metainfo)
-            
-            #set original rotation
-            self.sssb.render_obj.matrix_world = orig_transform
                 
         self.logger.debug("Rendering completed")
 
