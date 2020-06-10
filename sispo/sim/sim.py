@@ -25,8 +25,6 @@ from . import sc
 from .sc import *
 from . import sssb
 from .sssb import *
-from . import render
-from .render import *
 from . import utils
 
 import  mathutils
@@ -118,9 +116,6 @@ class Environment():
         self.with_infobox = with_infobox
         self.with_clipping = with_clipping
 
-        # Setup rendering engine (renderer)
-        self.setup_renderer()
-
         # Setup Sun
         self.setup_sun(sun)
 
@@ -189,8 +184,8 @@ class Environment():
 
         self.sun = CelestialBody(settings["model"]["name"],
                                  model_file=sun_model_file)
-        self.sun.render_obj = self.renderer.load_object(self.sun.model_file,
-                                                        self.sun.name)
+        #self.sun.render_obj = self.renderer.load_object(self.sun.model_file,
+        #                                                self.sun.name)
 
     def setup_sssb(self, settings):
         """Create SmallSolarSystemBody and respective blender object."""
@@ -213,11 +208,11 @@ class Environment():
                                          settings["trj"],
                                          settings["att"],
                                          model_file=sssb_model_file)
-        self.sssb.render_obj = self.renderer.load_object(self.sssb.model_file,
-                                                         settings["model"]["name"],
-                                                         ["SssbOnly", 
-                                                          "SssbConstDist"])
-        self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
+        #self.sssb.render_obj = self.renderer.load_object(self.sssb.model_file,
+        #                                                 settings["model"]["name"],
+        #                                                 ["SssbOnly", 
+        #                                                  "SssbConstDist"])
+        #self.sssb.render_obj.rotation_mode = "AXIS_ANGLE"
 
     def setup_spacecraft(self):
         """Create Spacecraft and respective blender object."""
@@ -248,10 +243,10 @@ class Environment():
         if not lightref_model_file.is_file():
             raise SimulationError("Given SSSB model filename does not exist.")
 
-        self.lightref = self.renderer.load_object(lightref_model_file,
-                                                  settings["model"]["name"],
-                                                  scenes="LightRef")
-        self.lightref.location = (0, 0, 0)
+        #self.lightref = self.renderer.load_object(lightref_model_file,
+        #                                          settings["model"]["name"],
+        #                                          scenes="LightRef")
+        #self.lightref.location = (0, 0, 0)
 
     def simulate(self):
         """Do simulation."""
@@ -317,7 +312,7 @@ class Environment():
             metainfo["distance"] = sc_pos.distance(sssb_pos)
             metainfo["date"] = date_str
 
-            orig_transform = self.set_rotation(sssb_rot, self.sssb)
+            self.set_rotation(sssb_rot, self.sssb)
 
             # Update environment
             self.sun.render_obj.location = -np.asarray(sssb_pos.toArray()) / 1000.
@@ -340,9 +335,6 @@ class Environment():
 
             # Render blender scenes
             self.renderer.render(metainfo)
-            
-            #set original rotation
-            self.sssb.render_obj.matrix_world = orig_transform
                 
         self.logger.debug("Rendering completed")
 

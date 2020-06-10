@@ -305,8 +305,8 @@ def main():
         if settings["options"].with_plugins:
             plugins.try_plugins(settings["plugins"], settings, env)
 
-        if settings["options"].with_render:
-            env.render()
+        #if settings["options"].with_render:
+            #env.render()
 
     if settings["options"].with_compression:
         logger.debug("With compression")

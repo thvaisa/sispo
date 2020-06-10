@@ -13,7 +13,6 @@ import threading
 import zlib
 
 from astropy import units as u
-import bpy
 import cv2
 from mathutils import Vector # pylint: disable=import-error
 import numpy as np
@@ -49,49 +48,7 @@ class BlenderController:
                  ext_logger=None):
         """Initialise blender controller class."""
 
-        if ext_logger is not None:
-            self.logger = ext_logger
-        else:
-            self.logger = utils.create_logger()
-
-        self.raw_dir = raw_dir
-        self.res_dir = res_dir
-        self.cycles = bpy.context.preferences.addons["cycles"]
-
-        self.default_scene = bpy.context.scene
-        self.scenes = bpy.data.scenes
-
-        self.cameras = bpy.data.cameras
-
-        # Initial scene is SssbOnly, clear from objects, and set defaults
-        self.default_scene.name = "SssbOnly"
-        for obj in bpy.data.objects:
-            bpy.data.objects.remove(obj)
-        self.set_scene_defaults(self.default_scene)
-
-        self.set_device()
-
-        # Setting background color to black, seems easiest approach
-        bpy.data.worlds[0].color = (0, 0, 0)
-        bpy.data.worlds[0].use_nodes = True
-        background = bpy.data.worlds[0].node_tree.nodes["Background"]
-        background.inputs[0].default_value = (0, 0, 0, 1.0)
-
-        # Star catalog
-        self.sta = starcat.StarCatalog(self.raw_dir,
-                                       ext_logger=self.logger,
-                                       starcat_dir=starcat_dir)
-
-        # Create compositor
-        self.comp = cp.ImageCompositor(self.res_dir,
-                                       self.raw_dir,
-                                       instrument,
-                                       sssb,
-                                       with_infobox,
-                                       with_clipping,
-                                       ext_logger=self.logger)
-
-        self.render_id = zlib.crc32(struct.pack("!f", time.time()))
+        pass
 
     def create_scene(self, scene_name):
         """Add empty scene."""
@@ -244,7 +201,7 @@ class BlenderController:
             scene.render.image_settings.color_depth = color_depth
             scene.render.image_settings.use_preview = use_preview
 
-    def set_output_file(self, name_suffix=None, scene=bpy.context.scene):
+    def set_output_file(self, name_suffix=None, scene=None):
         """Set output file path to given scenes with prior extension check."""
         filename = self.raw_dir / (scene.name + "_" + str(name_suffix))
         filename = str(filename)
